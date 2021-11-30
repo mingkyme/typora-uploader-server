@@ -27,7 +27,7 @@ func main() {
 		if len(c.Body()) > 0 {
 			randomFileName := randSeq(30) + ".png"
 			ioutil.WriteFile("static/"+randomFileName, c.Body(), 0644)
-			return c.SendString("http://localhost:3000/img/" + randomFileName)
+			return c.SendString("http://localhost:3000/static/" + randomFileName)
 		}
 		return c.SendStatus(500)
 	})
