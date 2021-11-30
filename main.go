@@ -26,7 +26,10 @@ func main() {
 	app.Post("/upload", func(c *fiber.Ctx) error {
 		if len(c.Body()) > 0 {
 			randomFileName := randSeq(30) + ".png"
-			ioutil.WriteFile("static/"+randomFileName, c.Body(), 0644)
+			err = ioutil.WriteFile("static/"+randomFileName, c.Body(), 0644)
+			if err != nil{
+				return c.SendStatus(500)
+			}
 			return c.SendString("http://localhost:3000/static/" + randomFileName)
 		}
 		return c.SendStatus(500)
