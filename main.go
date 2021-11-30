@@ -20,6 +20,8 @@ func main() {
 	}
 	staticPath := os.Getenv("STATIC_PATH")
 	serverURL := os.Getenv("SERVER_URL")
+	port := os.Getenv("PORT")
+
 	app := fiber.New()
 	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
@@ -48,7 +50,7 @@ func main() {
 		io.Copy(f, file)
 		return c.SendString(serverURL + randomFileName)
 	})
-	app.Listen(":3000")
+	app.Listen(port)
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
