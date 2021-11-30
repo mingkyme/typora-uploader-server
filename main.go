@@ -1,10 +1,12 @@
 package main
 
 import (
-	"io/ioutil"
+	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -17,22 +19,34 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	staticPath := os.Getenv("STATIC_PATH")
+	serverURL := os.Getenv("SERVER_URL")
 	app := fiber.New()
 	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
 	app.Post("/upload", func(c *fiber.Ctx) error {
-		if len(c.Body()) > 0 {
-			randomFileName := randSeq(30) + ".png"
-			err = ioutil.WriteFile("static/"+randomFileName, c.Body(), 0644)
-			if err != nil{
-				return c.SendStatus(500)
-			}
-			return c.SendString("http://localhost:3000/static/" + randomFileName)
+		mpf,err := c.MultipartForm()
+		if err != nil{
+			fmt.Println(err)
+			return c.SendStatus(500)
 		}
-		return c.SendStatus(500)
+		_ = mpf
+		fileHeader := mpf.File["file"][0]
+		fileName := fileHeader.Filename // image.png
+		fileExtension := fileName[strings.LastIndex(fileName,"."):] // .png
+		randomFileName := randSeq(30) + fileExtension
+		file, err := fileHeader.Open()
+		if err != nil{
+			fmt.Println(err)
+			return c.SendStatus(500)
+		}
+		f, err := os.OpenFile(staticPath + randomFileName, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil{
+			fmt.Println(err)
+			return c.SendStatus(500)
+		}
+		defer f.Close()
+		io.Copy(f, file)
+		return c.SendString(serverURL + randomFileName)
 	})
 	app.Listen(":3000")
 }
