@@ -18,7 +18,7 @@ func main() {
 	}
 	staticPath := os.Getenv("STATIC_PATH")
 	app := fiber.New()
-
+	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
