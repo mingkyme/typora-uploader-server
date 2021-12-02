@@ -29,9 +29,12 @@ func main() {
 		mpf, err := c.MultipartForm()
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(500)
+			return c.Status(400).SendString("send multipart/form-data")
 		}
-		_ = mpf
+		if len(mpf.File["file"]) == 0 {
+			fmt.Println("file is empty")
+			return c.Status(400).SendString("send with key 'file'")
+		}
 		fileHeader := mpf.File["file"][0]
 		fileName := fileHeader.Filename                              // image.png
 		fileExtension := fileName[strings.LastIndex(fileName, "."):] // .png
@@ -39,7 +42,7 @@ func main() {
 		file, err := fileHeader.Open()
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(500)
+			return c.SendStatus(400)
 		}
 		f, err := os.OpenFile(staticPath+randomFileName, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
