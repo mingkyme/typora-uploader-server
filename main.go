@@ -26,23 +26,23 @@ func main() {
 	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
 	app.Post("/upload", func(c *fiber.Ctx) error {
-		mpf,err := c.MultipartForm()
-		if err != nil{
+		mpf, err := c.MultipartForm()
+		if err != nil {
 			fmt.Println(err)
 			return c.SendStatus(500)
 		}
 		_ = mpf
 		fileHeader := mpf.File["file"][0]
-		fileName := fileHeader.Filename // image.png
-		fileExtension := fileName[strings.LastIndex(fileName,"."):] // .png
+		fileName := fileHeader.Filename                              // image.png
+		fileExtension := fileName[strings.LastIndex(fileName, "."):] // .png
 		randomFileName := randSeq(30) + fileExtension
 		file, err := fileHeader.Open()
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
 			return c.SendStatus(500)
 		}
-		f, err := os.OpenFile(staticPath + randomFileName, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil{
+		f, err := os.OpenFile(staticPath+randomFileName, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
 			fmt.Println(err)
 			return c.SendStatus(500)
 		}
@@ -50,7 +50,10 @@ func main() {
 		io.Copy(f, file)
 		return c.SendString(serverURL + randomFileName)
 	})
-	app.Listen(port)
+	err = app.Listen(port)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
