@@ -22,7 +22,7 @@ func main() {
 	serverURL := os.Getenv("SERVER_URL")
 	port := os.Getenv("PORT")
 
-	httpMode := os.Getenv("HTTP_MODE") == "ON"
+	httpMode := os.Getenv("HTTPS_MODE") == "ON"
 	var certPath string
 	var keyPath string
 	if httpMode {
