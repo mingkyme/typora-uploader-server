@@ -22,6 +22,13 @@ func main() {
 	serverURL := os.Getenv("SERVER_URL")
 	port := os.Getenv("PORT")
 
+	httpMode := os.Getenv("HTTP_MODE") == "ON"
+	var certPath string
+	var keyPath string
+	if httpMode {
+		certPath = os.Getenv("HTTPS_CERT_PATH")
+		keyPath = os.Getenv("HTTPS_KEY_PATH")
+	}
 	app := fiber.New()
 	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
@@ -53,7 +60,12 @@ func main() {
 		io.Copy(f, file)
 		return c.SendString(serverURL + randomFileName)
 	})
-	err = app.Listen(port)
+
+	if httpMode {
+		err = app.ListenTLS(port, certPath, keyPath)
+	} else {
+		err = app.Listen(port)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
