@@ -6,7 +6,9 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -51,7 +53,12 @@ func main() {
 			fmt.Println(err)
 			return c.SendStatus(400)
 		}
-		f, err := os.OpenFile(staticPath+randomFileName, os.O_WRONLY|os.O_CREATE, 0666)
+		// Date
+		t := time.Now()
+		timeStr := fmt.Sprintf("%d-%d-%d",t.Year(),t.Month(),t.Day())
+		os.Mkdir(path.Join(staticPath,timeStr),0777)
+
+		f, err := os.OpenFile(path.Join(staticPath,timeStr,randomFileName), os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			fmt.Println(err)
 			return c.SendStatus(500)
@@ -74,6 +81,7 @@ func main() {
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 func randSeq(n int) string {
+	rand.Seed(time.Now().UnixNano())
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
