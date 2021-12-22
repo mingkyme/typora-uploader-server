@@ -2,3 +2,4 @@
 nohup.out
 uploader-server
 .env
+.DS_Store
