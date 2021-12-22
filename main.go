@@ -65,7 +65,7 @@ func main() {
 		}
 		defer f.Close()
 		io.Copy(f, file)
-		return c.SendString(serverURL + randomFileName)
+		return c.SendString(serverURL + fmt.Sprintf("%s/%s",timeStr,randomFileName))
 	})
 
 	if httpMode {
