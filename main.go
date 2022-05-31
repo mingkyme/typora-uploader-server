@@ -47,7 +47,7 @@ func main() {
 		fileHeader := mpf.File["file"][0]
 		fileName := fileHeader.Filename                              // image.png
 		fileExtension := fileName[strings.LastIndex(fileName, "."):] // .png
-		randomFileName := randSeq(30) + fileExtension
+
 		file, err := fileHeader.Open()
 		if err != nil {
 			fmt.Println(err)
@@ -55,8 +55,18 @@ func main() {
 		}
 		// Date
 		t := time.Now()
-		timeStr := fmt.Sprintf("%d-%d-%d", t.Year(), t.Month(), t.Day())
+		timeStr := fmt.Sprintf("%04d-%02d-%02d", t.Year(), t.Month(), t.Day())
 		os.Mkdir(path.Join(staticPath, timeStr), 0777)
+
+		// Exist 확인
+		randomFileName := randSeq(30) + fileExtension
+		for {
+			_, err := os.Stat(path.Join(staticPath, timeStr, randomFileName))
+			if !os.IsExist(err) {
+				break
+			}
+			randomFileName = randSeq(30) + fileExtension // 중복된 값이니 재 생성.
+		}
 
 		f, err := os.OpenFile(path.Join(staticPath, timeStr, randomFileName), os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
