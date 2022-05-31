@@ -65,8 +65,8 @@ func main() {
 		}
 		defer f.Close()
 		io.Copy(f, file)
-		fmt.Println(c.BaseURL())
-		return c.SendString(fmt.Sprintf("%s/static", c.BaseURL()) + fmt.Sprintf("%s/%s", timeStr, randomFileName))
+
+		return c.SendString(fmt.Sprintf("https://%s/static/", c.Hostname()) + fmt.Sprintf("%s/%s", timeStr, randomFileName))
 	})
 
 	if httpMode {
