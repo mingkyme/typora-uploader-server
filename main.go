@@ -21,7 +21,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	staticPath := os.Getenv("STATIC_PATH")
-	serverURL := os.Getenv("SERVER_URL")
+	// serverURL := os.Getenv("SERVER_URL") // Request 의 URL 따라 응답.
 	port := os.Getenv("PORT")
 
 	httpMode := os.Getenv("HTTPS_MODE") == "ON"
@@ -55,17 +55,18 @@ func main() {
 		}
 		// Date
 		t := time.Now()
-		timeStr := fmt.Sprintf("%d-%d-%d",t.Year(),t.Month(),t.Day())
-		os.Mkdir(path.Join(staticPath,timeStr),0777)
+		timeStr := fmt.Sprintf("%d-%d-%d", t.Year(), t.Month(), t.Day())
+		os.Mkdir(path.Join(staticPath, timeStr), 0777)
 
-		f, err := os.OpenFile(path.Join(staticPath,timeStr,randomFileName), os.O_WRONLY|os.O_CREATE, 0666)
+		f, err := os.OpenFile(path.Join(staticPath, timeStr, randomFileName), os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			fmt.Println(err)
 			return c.SendStatus(500)
 		}
 		defer f.Close()
 		io.Copy(f, file)
-		return c.SendString(serverURL + fmt.Sprintf("%s/%s",timeStr,randomFileName))
+		fmt.Println(c.BaseURL())
+		return c.SendString(fmt.Sprintf("%s/static", c.BaseURL()) + fmt.Sprintf("%s/%s", timeStr, randomFileName))
 	})
 
 	if httpMode {
