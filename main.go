@@ -35,6 +35,7 @@ func main() {
 
 	app := fiber.New()
 	os.MkdirAll(staticPath, os.ModePerm)
+	app.Static("/", "./public/")
 	app.Static("/static", staticPath)
 	app.Post("/upload", func(c *fiber.Ctx) error {
 		mpf, err := c.MultipartForm()
