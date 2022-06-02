@@ -24,6 +24,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	httpsMode := os.Getenv("HTTPS_MODE") == "ON"
+	responseHttps := os.Getenv("RESPONSE_HTTPS") == "ON"
 
 	var certPath string
 	var keyPath string
@@ -31,6 +32,7 @@ func main() {
 		certPath = os.Getenv("HTTPS_CERT_PATH")
 		keyPath = os.Getenv("HTTPS_KEY_PATH")
 	}
+
 	app := fiber.New()
 	os.MkdirAll(staticPath, os.ModePerm)
 	app.Static("/static", staticPath)
@@ -76,7 +78,15 @@ func main() {
 		defer f.Close()
 		io.Copy(f, file)
 
-		return c.SendString(fmt.Sprintf("https://%s/static/", c.Hostname()) + fmt.Sprintf("%s/%s", timeStr, randomFileName))
+		// Response HTTPS Only Mode
+		protocol := ""
+		if responseHttps {
+			protocol = "https"
+		} else {
+			protocol = "http"
+		}
+
+		return c.SendString(fmt.Sprintf("%s://%s/static/%s/%s", protocol, c.Hostname(), timeStr, randomFileName))
 	})
 
 	if httpsMode {
