@@ -23,11 +23,11 @@ func main() {
 	staticPath := os.Getenv("STATIC_PATH")
 	port := os.Getenv("PORT")
 
-	httpMode := os.Getenv("HTTPS_MODE") == "ON"
+	httpsMode := os.Getenv("HTTPS_MODE") == "ON"
 
 	var certPath string
 	var keyPath string
-	if httpMode {
+	if httpsMode {
 		certPath = os.Getenv("HTTPS_CERT_PATH")
 		keyPath = os.Getenv("HTTPS_KEY_PATH")
 	}
@@ -79,7 +79,7 @@ func main() {
 		return c.SendString(fmt.Sprintf("https://%s/static/", c.Hostname()) + fmt.Sprintf("%s/%s", timeStr, randomFileName))
 	})
 
-	if httpMode {
+	if httpsMode {
 		err = app.ListenTLS(port, certPath, keyPath)
 	} else {
 		err = app.Listen(port)
