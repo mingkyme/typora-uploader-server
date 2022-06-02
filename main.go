@@ -21,10 +21,10 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	staticPath := os.Getenv("STATIC_PATH")
-	// serverURL := os.Getenv("SERVER_URL") // Request 의 URL 따라 응답.
 	port := os.Getenv("PORT")
 
 	httpMode := os.Getenv("HTTPS_MODE") == "ON"
+
 	var certPath string
 	var keyPath string
 	if httpMode {
